@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "serve": "node index",
     "start": "nodemon index"
@@ -13,6 +14,7 @@
   "dependencies": {
     "apollo-server": "^2.5.0",
     "bcryptjs": "^2.4.3",
+    "dotenv": "^16.0.1",
     "graphql": "^14.3.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.5.11",

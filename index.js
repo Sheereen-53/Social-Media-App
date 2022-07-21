@@ -1,24 +1,39 @@
-const { ApolloServer, PubSub } = require('apollo-server');
-const mongoose = require('mongoose');
+import {ApolloServer} from "apollo-server";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
 
-const typeDefs = require('./graphql/typeDefs');
-const resolvers = require('./graphql/resolvers');
-const { MONGODB } = require('./config.js');
+import typeDefs from "./graphql/typeDefs.js";
+import resolvers from "./graphql/resolvers/index.js";
 
-const pubsub = new PubSub();
+dotenv.config();
+
 
 const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  context: ({ req }) => ({ req, pubsub })
+    typeDefs,
+    resolvers,
+    context: ({req}) => ({req})
 });
 
-mongoose
-  .connect(MONGODB, { useNewUrlParser: true })
-  .then(() => {
-    console.log('MongoDB Connected');
-    return server.listen({ port: 5000 });
-  })
-  .then((res) => {
-    console.log(`Server running at ${res.url}`);
-  });
+const connect = async () => {
+    try {
+        await mongoose.connect(process.env.MONGO, { useNewUrlParser: true }, { useUnifiedTopology: true });
+        console.log("Connected to MongoDB");
+    } catch (error) {
+        throw error
+    }
+};
+
+mongoose.connection.on("disconnected", () => {
+    console.log("MongoDB disconnected");
+});
+
+mongoose.connection.on("connected", () => {
+    console.log("MongoDB connected");
+});
+
+server.listen({port: 5000}).then(res => {
+    connect();
+    console.log(`Server running on ${
+        res.url
+    }`);
+})
